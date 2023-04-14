@@ -1,0 +1,194 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+:root{
+    --heading:40px;
+}
+
+body{
+    background: #f3eded;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+
+
+    
+}
+
+.login_Container{
+    margin: 4rem 8rem;
+    border-radius: 10px;
+    background-color: #fff;
+    display: flex;
+}
+
+.left_div{
+    padding: 2rem;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.input_form{
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.main_heading{
+    font-size: var(--heading);
+    white-space: nowrap;
+}
+
+.light_font{
+    font-weight: 100px;
+    color: #888383;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.data{
+ border: none;
+ /* background-color: #f8f8f8; */
+ width: 55%;
+ line-height: 35px;
+ padding:0px 5px 0px 5px;
+ border-bottom: 2px solid #dfd7d7;
+ margin: .5rem;
+
+}
+.forget{
+    width: 55%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top:-8px ;
+}
+
+.forget-link{
+    text-decoration: none;
+    color: rgb(64, 68, 68);
+    font-weight: 100;
+    text-shadow: 1px 1px 10px rgb(17, 127, 218);
+    text-align:center;
+    vertical-align: baseline;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.data:focus{
+    border: none;
+    background:#f1ecec;
+}
+.input_button{
+    width: 55%;
+    margin: .8rem;
+    line-height: 30px;
+    border: 2px solid rgb(17, 126, 235);
+}
+
+.button-sign{
+    background-color: black;
+    color: #fff;
+    border: none;
+}
+
+.bottom-part{
+margin-top: 2rem;
+width: 55%;
+text-align: end;
+vertical-align: baseline;
+white-space: nowrap;
+font-size: 14px;
+margin-right:26px ;
+}
+
+span:last-child{
+    color: rgb(34, 117, 212);
+    letter-spacing: 0cm;
+    font-weight: 400;
+}
+.right_div{
+    margin: .5rem;
+    width: 50%;
+    background: url("https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+    background-position: center;
+    filter: blur(1px);
+}
+
+@media screen and (max-width:1080px){
+    
+    .login_Container{
+        margin: 3rem 1.5rem;
+    }
+    .data{
+        width: 80%;
+        line-height: 35px;
+        padding:0px 5px 0px 5px;
+        margin: .2rem;
+       
+       }
+       .forget{
+        width: 80%;
+        margin-top:-1rem ;
+    }
+    .input_button{
+        width: 80%;
+        margin: 2rem;
+    }
+    .bottom-part{
+        width: 100%;
+        text-align: center;
+        vertical-align: baseline;
+        margin-top: 2rem;
+        }
+    
+}
+
+@media screen and (max-width:768px) {
+    .right_div{
+        margin: 15px 0 ;
+        height: 50%;
+        width: 100%;
+    }
+    .main_heading{
+        font-size: 35px;
+    }
+    .left_div{
+        width: 100%;
+        padding: 10px;
+    }
+    .login_Container{
+        height: 95vh;
+        margin: 1rem;
+        flex-direction: column;
+    justify-content: center;
+align-items: center;    }
+    .data{
+        width: 80%;
+        line-height: 35px;
+        padding:0px 5px 0px 5px;
+        margin: .2rem;
+       
+       }
+       .forget{
+        width: 80%;
+        margin-top:-5px ;
+    }
+    .input_button{
+        width: 80%;
+        margin: .5rem;
+    }
+    .bottom-part{
+        margin-top: 2rem;
+        width: 80%;
+        vertical-align: baseline;
+        margin-top: .5rem;
+        }
+}
