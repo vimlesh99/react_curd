@@ -47,7 +47,7 @@ const AdminOneTable = ({
     );
   });
   console.log("adminFilterData :>> ", adminFilterData);
-  console.log("newFirebaseData :>> ", newFirebaseData);
+  console.log(newFirebaseData[0].id);
 
   useEffect(() => {
     filterDataFunc();

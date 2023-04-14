@@ -11,11 +11,17 @@ import { useNavigate } from "react-router-dom";
 import { logOut } from "../redux/action/loginUser";
 
 import AdminOneTable from "../component/AdminOneTable";
+import AdminNextTable from "../component/AdminTable";
 
 function Home() {
-  const [userData, setUserData] = useState({ uname: "", phone: "", mail: "" ,userId:"" });
+  const [userData, setUserData] = useState({
+    uname: "",
+    phone: "",
+    mail: "",
+    userId: "",
+  });
 
-  const[userIdOfTable , setUserIdTable]  = useState("");
+  const [userIdOfTable, setUserIdTable] = useState("");
 
   const [editIndex, setEditIndex] = useState();
   const [searchChar, setSearch] = useState("");
@@ -36,7 +42,14 @@ function Home() {
     submitBtnShow: "d-inline-block",
   });
 
-  function formValidation(userName, mobieNo, inputEmail, indexOfSaveRow) {
+  function formValidation(
+    userName,
+    mobieNo,
+    inputEmail,
+    indexOfSaveRow,
+    arrayCheck
+  ) {
+    console.log("arrayCheck :>> ", arrayCheck);
     console.log(indexOfSaveRow);
     var returnValue = true;
     // name validation
@@ -135,8 +148,8 @@ function Home() {
     }
 
     function mailExist(gmail) {
-      for (let i = 0; i < userArrayData.length; i++) {
-        if (gmail === userArrayData[i].mail && i !== indexOfSaveRow) {
+      for (let i = 0; i < arrayCheck.length; i++) {
+        if (gmail === arrayCheck[i].mail && i !== indexOfSaveRow) {
           return false;
         }
       }
@@ -146,22 +159,21 @@ function Home() {
   }
 
   // use redux
-  const{ accessToken,mail,loginRole }= useSelector((state) => state.login.accessToken);
+  const { accessToken, mail, loginRole } = useSelector(
+    (state) => state.login.accessToken
+  );
 
-  console.log(`mail=>${mail} role=>${loginRole}`)
+  console.log(`mail=>${mail} role=>${loginRole}`);
 
   const tbData = useSelector((state) => state.tableData?.tableAllData);
 
-   const userArrayData = tbData;
-   let userDataId = tbData[0]?.id;
-      
+  const userArrayData = tbData;
+  let userDataId = tbData[0]?.id;
+
   const dispatch = useDispatch();
 
-  
-
   const addUserData = () => {
- console.log("run addUserData")
-   console.log('userIdOfTable :>> ', userIdOfTable);
+    console.log("run addUserData");
     setShow((preVal) => {
       return {
         ...preVal,
@@ -170,21 +182,19 @@ function Home() {
         submitBtnShow: "d-inline",
       };
     });
-    const { uname, phone, mail ,userId } = userData;
+    const { uname, phone, mail } = userData;
 
-    let userDataId =loginRole =="user"? tbData[0]?.id:userIdOfTable;
-     
-    console.log('userDataId :>> ', userDataId);
-    const adminPrevDataArr = tbData?.filter(data=> data.id == userDataId)
-   
-    let prevData = adminPrevDataArr[0]?.tableData
-    console.log(prevData)
-  console.log(tbData)
-  console.log(userDataId)
-  console.log(adminPrevDataArr)
+    let userDataId = loginRole == "user" ? tbData[0]?.id : userIdOfTable;
 
-    if (formValidation(uname, phone, mail) !== false) {
-      const newUser = [ ...prevData,
+    console.log("userDataId :>> ", userDataId);
+    const adminPrevDataArr = tbData?.filter((data) => data.id == userDataId);
+
+    let prevData = adminPrevDataArr[0]?.tableData;
+    console.log("prevData :>> ", prevData);
+
+    if (formValidation(uname, phone, mail, editIndex, prevData) !== false) {
+      const newUser = [
+        ...prevData,
         {
           id: Math.floor(phone.toString().slice(0, 5) * Math.random()),
           name: uname,
@@ -196,7 +206,7 @@ function Home() {
       dispatch(addUserDataTable(userDataId, newUser));
 
       setUserData(() => {
-        return { uname: "", phone: "", mail: "" ,userId:"" };
+        return { uname: "", phone: "", mail: "", userId: "" };
       });
       setShow((preVal) => {
         return { ...preVal, formShow: "d-none" };
@@ -204,11 +214,9 @@ function Home() {
     }
   };
 
-  const editUserData = (id , editUserId) => {
-    
-
-    const adminPrevDataArr = tbData?.filter(data=> data.id == editUserId)
-    const editArr = adminPrevDataArr[0]?.tableData
+  const editUserData = (id, editUserId) => {
+    const adminPrevDataArr = tbData?.filter((data) => data.id == editUserId);
+    const editArr = adminPrevDataArr[0]?.tableData;
     setShow((preVal) => {
       return {
         ...preVal,
@@ -217,14 +225,14 @@ function Home() {
         submitBtnShow: "d-none",
       };
     });
-    setUserIdTable(()=>editUserId)
+    setUserIdTable(() => editUserId);
     for (let i = 0; i < editArr.length; i++) {
       if (editArr[i].id == id) {
         setUserData(() => {
           return {
             uname: editArr[i].name,
             phone: editArr[i].mobile,
-            mail: editArr[i].mail
+            mail: editArr[i].mail,
           };
         });
         setEditIndex(i);
@@ -232,19 +240,22 @@ function Home() {
     }
   };
 
-
   const saveUserData = () => {
-    const { uname, phone, mail  } = userData;
-    console.log(userIdOfTable)
-    
-    console.log(editIndex);
-    if (formValidation(uname, phone, mail, editIndex) !== false) {
-      console.log('tbData :>> ', tbData);
-      const admineditDataArr = tbData?.filter(data => data.id === userIdOfTable)
-      console.log(admineditDataArr)
-      const saveArr = admineditDataArr[0].tableData
+    const { uname, phone, mail } = userData;
+    console.log(userIdOfTable);
 
-     console.log(saveArr)
+    const adminPrevDataArr = tbData?.filter((data) => data.id == userDataId);
+
+    let prevData = adminPrevDataArr[0]?.tableData;
+    if (formValidation(uname, phone, mail, editIndex, prevData) !== false) {
+      console.log("tbData :>> ", tbData);
+      const admineditDataArr = tbData?.filter(
+        (data) => data.id === userIdOfTable
+      );
+      console.log(admineditDataArr);
+      const saveArr = admineditDataArr[0].tableData;
+
+      console.log(saveArr);
 
       let editVal = (saveArr[editIndex] = {
         id: saveArr[editIndex].id,
@@ -252,13 +263,11 @@ function Home() {
         mobile: phone,
         mail: mail,
       });
-      
-      console.log(editVal)
-      console.log(tbData)
+
       saveArr.splice(editIndex, 1, editVal);
 
       setUserData(() => {
-        return { uname: "", phone: "", mail: ""  };
+        return { uname: "", phone: "", mail: "" };
       });
       setShow((preVal) => {
         return {
@@ -271,14 +280,15 @@ function Home() {
       dispatch(addUserDataTable(userIdOfTable, saveArr));
     }
 
-    
     // console.log(saveArr);
   };
 
-  const deleteRow = (id ,deleteUserId) => {
-    const adminDeleteDataArr = tbData?.filter(data => data.id === deleteUserId)
-      console.log(adminDeleteDataArr)
-      const saveArr = adminDeleteDataArr[0].tableData
+  const deleteRow = (id, deleteUserId) => {
+    const adminDeleteDataArr = tbData?.filter(
+      (data) => data.id === deleteUserId
+    );
+    console.log(adminDeleteDataArr);
+    const saveArr = adminDeleteDataArr[0].tableData;
 
     if (window.confirm("are you sure want to delete") == true) {
       let updateData = saveArr.filter((data) => data.id !== id);
@@ -289,7 +299,6 @@ function Home() {
     }
   };
 
-  
   const atrrArr = [
     show,
     setShow,
@@ -299,79 +308,82 @@ function Home() {
     userData,
     setUserData,
     saveUserData,
-    loginRole
+    loginRole,
   ];
 
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const searchVal = (e) => {
     setSearch(e.target.value);
     console.log(searchChar);
   };
 
   useEffect(() => {
-    dispatch(getTableData(mail,loginRole));
-  },[ accessToken]);
-  
+    dispatch(getTableData(mail, loginRole));
+  }, [accessToken]);
+
   useEffect(() => {
     if (accessToken) {
       navigate("/home");
-    }else{
+    } else {
       navigate("/signin");
     }
-  },[accessToken, navigate]);
+  }, [accessToken, navigate]);
 
   return (
     <div className="container mt-5">
       <Userform atrrArr={atrrArr} />
       <div className="mt-5 d-flex  justify-content-between">
-      <button
+        <button
           className="btn btn-danger ms-3"
-          onClick={() =>
-          dispatch(logOut())
-          }
+          onClick={() => dispatch(logOut())}
         >
           SIGN OUT
         </button>
         <div className=" d-flex  justify-content-end">
-        <input
-          class="border text-dark ps-3 "
-          onChange={searchVal}
-          type="search"
-          placeholder="Search"
-          id="search_box"
-        />
-       {loginRole=== "user" &&<button
-          className="btn btn-primary ms-3"
-          onClick={() =>
-            setShow((preVal) => {
-              return { ...preVal, formShow: "d-block" };
-            })
-          }
-        >
-          ADD USER
-        </button>}
+          <input
+            class="border text-dark ps-3 "
+            onChange={searchVal}
+            type="search"
+            placeholder="Search"
+            id="search_box"
+          />
+          {loginRole === "user" && (
+            <button
+              className="btn btn-primary ms-3"
+              onClick={() =>
+                setShow((preVal) => {
+                  return { ...preVal, formShow: "d-block" };
+                })
+              }
+            >
+              ADD USER
+            </button>
+          )}
         </div>
-       
       </div>
-      {loginRole=== "user" && userArrayData?.map((arrayData)=>{
-        return<Datatable
-        editForm={editUserData}
-        newFirebaseData={arrayData}
-        deleteRow={deleteRow}
-        searchChar={searchChar.trim()}
-      />})}
+      {loginRole === "user" &&
+        userArrayData?.map((arrayData) => {
+          return (
+            <Datatable
+              editForm={editUserData}
+              newFirebaseData={arrayData}
+              deleteRow={deleteRow}
+              searchChar={searchChar.trim()}
+            />
+          );
+        })}
+      {loginRole === "admin" && (
+        <AdminNextTable
+          editForm={editUserData}
+          newFirebaseData={userArrayData}
+          deleteRow={deleteRow}
+          searchChar={searchChar.trim()}
+          addUser={addUserData}
+          setUserIdTable={setUserIdTable}
+          setShow={setShow}
+        />
+      )}
       {/* {loginRole=== "admin" && 
-      userArrayData?.map((arrayData)=>{
-        return<AdminDatatable
-        editForm={editUserData}
-        newFirebaseData={arrayData}
-        deleteRow={deleteRow}
-        searchChar={searchChar.trim()}
-      />})
-      
-      } */}
-      {loginRole=== "admin" && 
      
       <AdminOneTable
         editForm={editUserData}
@@ -382,10 +394,7 @@ const navigate = useNavigate();
         setUserIdTable={setUserIdTable}
         setShow={setShow}
       />
-      }
-
-
-
+      } */}
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
 } from "react-icons/io5";
 import { AiFillDelete, AiFillEdit, AiFillFileAdd } from "react-icons/ai";
 
-const AdminOneTable = ({
+const AdminNextTable = ({
   editForm,
   deleteRow,
   searchChar,
@@ -19,25 +19,10 @@ const AdminOneTable = ({
   setUserIdTable,
   setShow,
 }) => {
-  const [pageInd, setPageInd] = useState(0);
-  const [pageArr, setPageArr] = useState([]);
-  const [isDesending, setIsDesending] = useState(true);
-  const [isDesendingMail, setIsDesendingMail] = useState(true);
 
-  const [filterData, setfilterData] = useState([]);
 
-  const userArrayData = newFirebaseData?.tableData;
+
   
-  const filterDataFunc = () => {
-    const filterDt = userArrayData?.filter(
-      (data) =>
-        data.name?.toLowerCase().includes(searchChar) ||
-        data.mobile?.toLowerCase().includes(searchChar) ||
-        data.mail?.toLowerCase().includes(searchChar)
-    );
-    setfilterData(() => filterDt);
-  };
-
   const adminFilterData = newFirebaseData.map((val) => {
     return val?.tableData.filter(
       (data) =>
@@ -47,66 +32,10 @@ const AdminOneTable = ({
     );
   });
   console.log("adminFilterData :>> ", adminFilterData);
-  console.log("newFirebaseData :>> ", newFirebaseData);
+    console.log(newFirebaseData[0]?.id);
 
-  useEffect(() => {
-    filterDataFunc();
-    console.log("run filterfunc");
-  }, [searchChar, userArrayData]);
 
-  const paginationData = () => {
-    const chunkSize = 2;
-    let chunk = [];
-    for (let i = 0; i < filterData?.length; i += chunkSize) {
-      chunk = [...chunk, filterData.slice(i, i + chunkSize)];
-    }
-    setPageArr(chunk);
-    setPageInd(0);
-  };
 
-  useEffect(() => {
-    console.log("run pagination");
-    console.log(pageInd);
-    paginationData();
-  }, [filterData, userArrayData]);
-
-  const previous = () => {
-    if (pageInd > 0) {
-      setPageInd(pageInd - 1);
-    }
-  };
-  const next = () => {
-    if (pageInd < pageArr?.length - 1) {
-      setPageInd(() => pageInd + 1);
-    }
-  };
-
-  const shortByName = (array, property) => {
-    if (isDesending) {
-      console.log("hii short");
-      userArrayData.sort((a, b) => (a[property] > b[property] ? -1 : 1));
-      setIsDesending(false);
-      console.log(userArrayData);
-      filterDataFunc();
-    } else {
-      userArrayData.sort((a, b) => (a[property] > b[property] ? 1 : -1));
-      setIsDesending(true);
-      console.log(userArrayData);
-      filterDataFunc();
-    }
-  };
-
-  const shortByMail = (array, property) => {
-    if (isDesendingMail) {
-      userArrayData.sort((a, b) => (a[property] > b[property] ? -1 : 1));
-      setIsDesendingMail(false);
-      filterDataFunc();
-    } else {
-      userArrayData.sort((a, b) => (a[property] > b[property] ? 1 : -1));
-      setIsDesendingMail(true);
-      filterDataFunc();
-    }
-  };
 
   return (
     <div>
@@ -125,7 +54,6 @@ const AdminOneTable = ({
                 Name
                 <span
                   className="d-flex flex-column "
-                  onClick={() => shortByName(userArrayData, "name")}
                 >
                   <IoCaretUpOutline />
                   <IoCaretDownOutline />
@@ -138,7 +66,6 @@ const AdminOneTable = ({
                 Gmail
                 <span
                   className="d-flex flex-column "
-                  onClick={() => shortByMail(userArrayData, "mail")}
                 >
                   <IoCaretUpOutline />
                   <IoCaretDownOutline />
@@ -151,21 +78,14 @@ const AdminOneTable = ({
           </tr>
         </thead>
         <tbody>
-          {newFirebaseData.map((data, ind) => {
+          {adminFilterData.map((data, mainIndex) => {
 
-            return   data.tableData.length ? 
+            return   data.length ? 
 
-           data.tableData
-              .filter(
-                (data) =>
-                  data.name?.toLowerCase().includes(searchChar) ||
-                  data.mobile?.toLowerCase().includes(searchChar) ||
-                  data.mail?.toLowerCase().includes(searchChar)
-              )
-              .map((val, ind) => {
+           data.map((val, ind) => {
                 return (
                   <tr key={val.id}>
-                    <td>{data.username}</td>
+                    <td>{newFirebaseData[mainIndex].username}</td>
                     <th scope="row">{val.id}</th>
                     <td>{val.name}</td>
                     <td>{val.mobile}</td>
@@ -173,13 +93,13 @@ const AdminOneTable = ({
                     <td className="text-center">
                       <button
                         className="btn btn-warning me-2"
-                        onClick={() => editForm(val.id, data.id)}
+                        onClick={() => editForm(val.id, newFirebaseData[mainIndex].id)}
                       >
                         <AiFillEdit size={22} />
                       </button>
                       <button
                         className="btn btn-danger me-2"
-                        onClick={() => deleteRow(val.id, data.id)}
+                        onClick={() => deleteRow(val.id, newFirebaseData[mainIndex].id)}
                       >
                         <AiFillDelete size={22} />
                       </button>
@@ -190,7 +110,7 @@ const AdminOneTable = ({
                           setShow((preVal) => {
                             return { ...preVal, formShow: "d-block" };
                           });
-                          setUserIdTable(() => data.id);
+                          setUserIdTable(() => newFirebaseData[mainIndex].id);
                         }}
                       >
                         <AiFillFileAdd size={22} />
@@ -212,7 +132,7 @@ const AdminOneTable = ({
                           setShow((preVal) => {
                             return { ...preVal, formShow: "d-block" };
                           });
-                          setUserIdTable(() => data.id);
+                          setUserIdTable(() => newFirebaseData[mainIndex].id);
                         }}
                       >
                         <AiFillFileAdd size={22} />
@@ -222,42 +142,8 @@ const AdminOneTable = ({
           })}
         </tbody>
       </table>
-      {/* {pageArr?.length ? (
-        <div className="d-flex justify-content-center col-12 gap-2 mt-5">
-          <button
-            className="btn btn-secondary"
-            disabled={pageInd == 0 ? true : false}
-            onClick={previous}
-          >
-            <IoChevronBack size={20} />
-          </button>
-          {pageArr?.map((data, val) => {
-            return (
-              <button
-                key={val}
-                type="button "
-                className={`px-2 ${
-                  val == pageInd ? "btn-outline-primary active" : "none"
-                }`}
-                onClick={() => setPageInd(val)}
-              >
-                {val + 1}
-              </button>
-            );
-          })}
-          <button
-            className={`btn btn-secondary `}
-            disabled={pageInd == pageArr?.length - 1 ? true : false}
-            onClick={next}
-          >
-            <IoChevronForwardOutline size={20} />
-          </button>
-        </div>
-      ) : (
-        <h1 className="text-center text-secondary mt-5">NOT DATA FOUND</h1>
-      )} */}
     </div>
   );
 };
 
-export default AdminOneTable;
+export default AdminNextTable;
