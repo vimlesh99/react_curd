@@ -9,6 +9,7 @@ import {
   IoChevronBack,
 } from "react-icons/io5";
 import { AiFillDelete, AiFillEdit, AiFillFileAdd } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 const AdminOneTable = ({
   editForm,
@@ -80,7 +81,7 @@ const AdminOneTable = ({
       setPageInd(() => pageInd + 1);
     }
   };
-
+       const navigate = useNavigate();
   const shortByName = (array, property) => {
     if (isDesending) {
       console.log("hii short");
@@ -211,6 +212,7 @@ const AdminOneTable = ({
                             return { ...preVal, formShow: "d-block" };
                           });
                           setUserIdTable(() => data.id);
+                          
                         }}
                       >
                         <AiFillFileAdd size={22} />

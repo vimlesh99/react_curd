@@ -1,19 +1,31 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import "../../node_modules/react-toastify/dist/ReactToastify.css";
 import "./formStyle.css";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/action/loginUser";
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  Divider
+} from "antd";
 
-const SignInScreen = () => {
+import {
+  MailOutlined,
+  LockOutlined,
+
+} from "@ant-design/icons";
+
+const SignInScreen = ({toast}) => {
   const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = React.useState(false);
 
-  const loginSt = useSelector((state) => state.login);
+  const loginSt = useSelector((state) => state?.login);
   
  let getAccessToken = loginSt.accessToken?.accessToken;
   const [inputData, setInputeData] = useState({
@@ -118,10 +130,48 @@ const SignInScreen = () => {
       setInputeData({
         email: "",
         password: "",
-        cnfpassword: "",
       });
     }
   };
+
+  // use antd 
+  const { Option } = Select;
+
+  const formItemLayout = {
+   
+    wrapperCol: {
+      xs: {
+        span: 24,
+      },
+      sm: {
+        span: 24,
+      },
+    },
+  };
+
+  const tailFormItemLayout = {
+    wrapperCol: {
+      xs: {
+        span: 24,
+        offset: 10,
+      },
+      sm: {
+        span: 24,
+        offset: 0,
+      },
+    },
+  };
+
+  const [form] = Form.useForm();
+
+  const onFinish = (values) => {
+    console.log('values.email :>> ', values.email);
+    console.log("Received values of form: ", values);
+    dispatch(login(values.email, values.password));
+    if(loginSt.error){
+      toast(loginSt.error)}
+  };
+
 
   const getInputData = (e) => {
     let { name, value } = e.target;
@@ -155,7 +205,7 @@ const SignInScreen = () => {
         </small>
         <br />
 
-        <form className="input_form" onClick={(e) => e.preventDefault()}>
+     {/* <form className="input_form" onClick={(e) => e.preventDefault()}>
           <input
             className="data"
             type="email"
@@ -181,9 +231,7 @@ const SignInScreen = () => {
             {inpError.errp2}
           </small>
           <br />
-          <small className={`text-danger ms-1 ${inpError.errL}`}>
-            {inpError.errLogin}
-          </small>
+       
           <br />
           <button
             className=" login_button input_button"
@@ -192,27 +240,138 @@ const SignInScreen = () => {
           >
             Login in
           </button>
-          <ToastContainer
-            position="top-center"
-            autoClose={4000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-        </form>
+          
+        </form> */}
+        <Form
+    {...formItemLayout}
+    form={form}
+    name="register"
+    onFinish={onFinish}
+    style={{
+      maxWidth: 800,
+      
+    }}
+    scrollToFirstError
+  >
+   <Form.Item
+      name="email"
+      
+      rules={[
+        {
+          type: "email",
+          message: "The input is not valid E-mail!",
+        },
+        {
+          required: true,
+          message: "Please input your E-mail!",
+        },
+      ]}
+    >
+      <Input placeholder="email" prefix={<MailOutlined />}  />
+    </Form.Item>
 
-        <span className="bottom-part ">
-          <small className="light_font">Don't have an account? </small>
-          <Link to="/">Sign up</Link>
+    <Form.Item
+      name="password"
+      extra="Password must have one uppercase letter, number and special cherecter"
+      rules={[
+        {
+          required: true,
+          message: "Please input your password!",
+        },
+      ]}
+      hasFeedback
+    >
+        <Input.Password
+          placeholder="password"
+          visibilityToggle={{
+            visible: passwordVisible,
+            onVisibleChange: setPasswordVisible,
+          }}
+          prefix={<LockOutlined />} 
+        />
+    
+    </Form.Item>
+    <Divider orientation="right" plain>
+    <span className="text-end"><Link  to="/forgetpassword">Forget password?</Link></span>
+    </Divider>
+   
+    <Form.Item {...tailFormItemLayout}>
+      <Button type="primary" htmlType="submit" block >
+        <span style={{color:"white"}}>Sign In</span>
+      </Button>
+    </Form.Item>
+  </Form>
+
+  <span className="mt-5">
+          <small className="light_font">don't have an account?</small>
+          <Link to="/signup">Sign up</Link>
+          <br />
+          
         </span>
+ 
       </div>
       {/* <div className="right_div"></div> */}
     </div>
+// {false &&
+//     <Row justify="center" align="middle" style={{display:"flex",justifyContent:"center",alignItems:"center",marginTop:"100px"}}>
+//       <Col  xs={20} sm={16} md={14} lg={12} xl={8}  style={{border:"1px solid red"}}>
+//         <Form
+//     {...formItemLayout}
+//     form={form}
+//     name="register"
+//     onFinish={onFinish}
+//     style={{
+//       maxWidth: 800,
+      
+//     }}
+//     scrollToFirstError
+//   >
+//    <Form.Item
+//       name="email"
+      
+//       rules={[
+//         {
+//           type: "email",
+//           message: "The input is not valid E-mail!",
+//         },
+//         {
+//           required: true,
+//           message: "Please input your E-mail!",
+//         },
+//       ]}
+//     >
+//       <Input placeholder="email" prefix={<MailOutlined />}  />
+//     </Form.Item>
+
+//     <Form.Item
+//       name="password"
+//       extra="Password must have one uppercase letter, number and special cherecter"
+//       rules={[
+//         {
+//           required: true,
+//           message: "Please input your password!",
+//         },
+//       ]}
+//       hasFeedback
+//     >
+//         <Input.Password
+//           placeholder="password"
+//           visibilityToggle={{
+//             visible: passwordVisible,
+//             onVisibleChange: setPasswordVisible,
+//           }}
+//           prefix={<LockOutlined />} 
+//         />
+    
+//     </Form.Item>
+//     <Form.Item {...tailFormItemLayout}>
+//       <Button type="primary" htmlType="submit" style={{width:180}}>
+//         <span style={{color:"white"}}>Register</span>
+//       </Button>
+//     </Form.Item>
+//   </Form>
+//       </Col>
+//     </Row>}
   );
 };
 

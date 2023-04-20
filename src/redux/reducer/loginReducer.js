@@ -34,7 +34,7 @@ import {
       case LOGIN_FAIL:
         return {
           
-          accessToken: null,
+          ...state,
           loading: false,
           error: payload,
         };

@@ -28,27 +28,8 @@ export const login = (email, password) => async (dispatch) => {
             return role.data().role
           })
 
-    console.log('rdata :>> ', rdata);
-    console.log('roleData :>> ', roleData);
 
-    // onSnapshot(mailQuery, (data) => {
-    
-    //    const loginRoleData = data.docs.map((items) => {
-    //       return {...items.data()}
-    //     })
-     
-    //     let loginRole  = loginRoleData[0].role;
-
-    //     sessionStorage.setItem("user-access-token",accessToken);
-    //     sessionStorage.setItem("user-mail",email);
-    //     sessionStorage.setItem("login-role",loginRole);
-
-    //     dispatch({
-    //         type: LOGIN_SUCCESS,
-    //         payload: {accessToken,mail:email,loginRole},
-    //       });
-        
-    // });
+   
     let loginRole  = rdata[0];
 
     sessionStorage.setItem("user-access-token",accessToken);
@@ -60,15 +41,7 @@ export const login = (email, password) => async (dispatch) => {
     });
   
 
-
-
-
-   
-    // navigate("/home");
-
-
   }catch (error) {
-    console.log(error.message);
     dispatch({
       type: LOGIN_FAIL,
       payload: error.message,
@@ -81,9 +54,8 @@ export const login = (email, password) => async (dispatch) => {
 export const logOut = () =>async (dispatch)=>{
 
 try{   const auth = getAuth();
-        const logOutUser =await signOut(auth)
+        const logOutUser = await signOut(auth)
         
-             
          sessionStorage.removeItem("user-access-token");
          sessionStorage.removeItem("user-mail");
          sessionStorage.removeItem("login-role");

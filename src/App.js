@@ -1,42 +1,30 @@
 /** @format */
-import { useState } from "react";
-// import FormSec from "./component/FormSec.js";
-import SignUpScreen from "./loginScreen/SignUpscreen";
+import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import 'antd/dist/reset.css';
 
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-} from "react-router-dom";
-import Home from "./homeScreen/Home";
-import UserSignInScreen from "./loginScreen/SignInScreen";
-
+import AllRoutes from "./component/AllRoutes";
 
 function App() {
-
   
 
   return (
     <>
-    <Routes>
-    <Route
-      path="/"
-      exact
-      element={<SignUpScreen/>}
-    ></Route>
-    <Route
-      path="/signin"
-      exact
-      element={<UserSignInScreen/>}
-    ></Route>
-    <Route
-      path="/home"
-      exact
-      element={<Home/>}
-    ></Route>
-   </Routes>
-   </>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+   
+      <AllRoutes/>
+    </>
   );
 }
 

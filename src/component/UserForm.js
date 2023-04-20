@@ -1,6 +1,8 @@
 /** @format */
 
 import React from "react";
+import { useEffect } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 const FormData = ({ atrrArr }) => {
   const [
@@ -12,9 +14,11 @@ const FormData = ({ atrrArr }) => {
     userData,
     setUserData,
     saveUserData,
-    loginRole,
+    loginRole
   ] = atrrArr;
 
+
+const navigate = useNavigate()
   const getUserData = (e) => {
     let { name, value } = e.target;
     setUserData((prevVal) => {
@@ -24,6 +28,9 @@ const FormData = ({ atrrArr }) => {
       };
     });
   };
+
+  const path = useLocation();
+
 
   const nameImputHandel = (e) => {
     var charCode = e.key;
@@ -46,12 +53,15 @@ const FormData = ({ atrrArr }) => {
     }
   };
 
+
+
   const cancelForm = () => {
     setInpError((preVal) => {
       return { ...preVal, err1: "d-none", errp: "d-none", errm: "d-none" };
     });
+    navigate("/home")
     setShow((preVal) => {
-      return { ...preVal, formShow: "d-none" };
+      return { ...preVal, formShow: "d-none" , saveBtnShow: "d-none",  submitBtnShow: "d-inline",};
     });
     setUserData(() => {
       return { uname: "", phone: "", mail: "" };
@@ -60,14 +70,14 @@ const FormData = ({ atrrArr }) => {
   const numberImputHandel = (e) => {
     let numCode = e.charCode;
     console.log(numCode);
-    if (numCode >= 48 && numCode < 58 && userData.phone.length < 10) {
+    if (numCode >= 48 && numCode < 58 && userData.phone?.length < 10) {
       setInpError((preVal) => {
         return { ...preVal, errp: "d-none" };
       });
       return true;
     } else {
       e.preventDefault();
-      if (userData.phone.length == 10) {
+      if (userData.phone?.length == 10) {
         setInpError((preVal) => {
           return { ...preVal, errp: "d-block", errp2: "only 10 digit" };
         });
@@ -88,10 +98,32 @@ const FormData = ({ atrrArr }) => {
     }
   };
 
+  useEffect(()=>{
+    if(loginRole=="admin"){
+      setShow((preVal) => {
+        return {
+          ...preVal,
+          formShow: "d-block",
+          saveBtnShow: "d-none",
+          submitBtnShow: "d-inline",
+        };
+      });
+    }else{
+      setShow((preVal) => {
+        return {
+          ...preVal,
+          formShow: "d-none",
+          saveBtnShow: "d-none",
+          submitBtnShow: "d-inline",
+        };
+      });
+    }
+  },[ ])
   return (
     <div
-      className={`container d-flex justify-content-center mb-5 ${show.formShow}`}
+      className={`container d-flex justify-content-center flex-column align-items-center gap-5 mb-5 ${show.formShow}`}
     >
+   {loginRole =="admin" &&( path.pathname == "/adduser"?<h1 className="text-"> Add user data</h1>:<h1 className="text-"> Edit user data</h1>)}
       <form className="row g-3 col-6">
         <div className="col-md-6">
           <label htmalfor="userName" className="form-label">
@@ -146,22 +178,7 @@ const FormData = ({ atrrArr }) => {
         </div>
 
         <div className="col-12  d-flex justify-content-between flex-row align-items-center">
-         {/* {loginRole =="admin" &&
-          <div className=" d-flex justify-content-between flex-row gap-5 align-items-center">
-            <label htmalfor="userId" className="form-label text-nowrap">
-              User Id
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="userId"
-              placeholder="userId"
-              name="userId"
-              readOnly={loginRole=="user"?true:false}
-              onChange={getUserData}
-              value={userData.userId}
-            />
-          </div>} */}
+       
 
           <div>
             <button type="button" className="btn btn-secondary " onClick={cancelForm}>
@@ -170,7 +187,9 @@ const FormData = ({ atrrArr }) => {
             <button
               type="button"
               className={`btn btn-success ms-2 ${show.submitBtnShow}`}
-              onClick={() => addUserData()}
+              onClick={() =>{
+                 addUserData()
+                 }}
             >
               Submit
             </button>

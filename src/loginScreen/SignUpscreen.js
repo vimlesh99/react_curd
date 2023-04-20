@@ -4,16 +4,33 @@ import { app, db } from "../firebaseConfig";
 import { ToastContainer, toast } from "react-toastify";
 import "../../node_modules/react-toastify/dist/ReactToastify.min.css";
 import "./formStyle.css";
+import {
+  AutoComplete,
+  Button,
+  Cascader,
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select,
+  Space,
+  Tooltip,
+} from "antd";
 
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
- 
-} from "firebase/auth";
+  UserOutlined,
+  MailOutlined,
+  LockOutlined,
+
+} from "@ant-design/icons";
+
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 
 import { addDoc, collection } from "firebase/firestore";
-const SignUpScreen = () => {
+const SignUpScreen = ({ toast }) => {
   const [submitBtnDis, setSubmitBtnDis] = useState(false);
   const navigate = useNavigate();
   const [inputData, setInputeData] = useState({
@@ -22,7 +39,7 @@ const SignUpScreen = () => {
     cnfpassword: "",
   });
 
-
+  const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [inpError, setInpError] = useState({
     erru: "d-none",
     erru2: "",
@@ -37,11 +54,11 @@ const SignUpScreen = () => {
   });
 
   // form validation
-  function formValidation(uname, inputEmail, password, cnfpassword, role, e) {
+  function formValidation(uname, inputEmail, password, cnfpassword, role) {
     var returnValue = true;
 
     // username validation
-    if (uname === "" || IsUser(uname, e) === false) {
+    if (uname === "" || IsUser(uname) === false) {
       setInpError((preVal) => {
         return { ...preVal, erru: "d-block" };
       });
@@ -143,7 +160,6 @@ const SignUpScreen = () => {
           errrole: "d-inline",
           errrole2: "*please select role",
         };
-
       });
       returnValue = false;
     } else {
@@ -152,7 +168,7 @@ const SignUpScreen = () => {
       });
     }
 
-    function IsUser(uname, e) {
+    function IsUser(uname) {
       let regex = /^[a-zA-Z\s]*$/;
       if (!regex.test(uname)) {
         return false;
@@ -181,38 +197,31 @@ const SignUpScreen = () => {
 
   const auth = getAuth();
 
-  const handelSubmitData = (e) => {
-    console.log(inputData)
+  const handelSubmitData = () => {
     if (
       formValidation(
         inputData.user_name,
         inputData.email,
         inputData.password,
         inputData.cnfpassword,
-        inputData.role,
-        e
+        inputData.role
       ) !== false
     ) {
       createUserWithEmailAndPassword(auth, inputData.email, inputData.password)
         .then((res) => {
           setSubmitBtnDis(true);
           console.log(res.user);
-          const user = res.user;
-          //  updateProfile(user,{
-          //   displayName:value.name
-          //  })
-
+        
           navigate("/signin");
           addDoc(collectionRef, {
             userxname: inputData.user_name,
             email: inputData.email,
-            password: inputData.password,
             role: inputData.role,
             tableData: [],
           })
-            .then((res) => console.log(`data added :${res}`))
+            .then((res) => toast(`account created success :${res.userxname}`))
             .catch((err) => {
-              console.log(err.message);
+              toast(err.message);
             });
         })
         .catch((err) => {
@@ -238,13 +247,70 @@ const SignUpScreen = () => {
     });
   };
 
+  // antd use
+  const { Option } = Select;
+
+  const formItemLayout = {
+   
+    wrapperCol: {
+      xs: {
+        span: 24,
+      },
+      sm: {
+        span: 24,
+      },
+    },
+  };
+
+  const tailFormItemLayout = {
+    wrapperCol: {
+      xs: {
+        span: 24,
+        offset:6,
+      },
+      sm: {
+        span: 16,
+        offset: 8,
+      },
+    },
+  };
+
+  const [form] = Form.useForm();
+  const onFinish = (values) => {
+    console.log('values.email :>> ', values.email);
+    console.log("Received values of form: ", values);
+    createUserWithEmailAndPassword(auth, values.email, values.password)
+    .then((res) => {
+      setSubmitBtnDis(true);
+      
+
+      navigate("/signin");
+      addDoc(collectionRef, {
+        userxname: values.name,
+        email: values.email,
+        role: values.role,
+        tableData: [],
+      })
+        .then((res) => toast(`account created success :${values.name}`))
+        .catch((err) => {
+          toast(err.message);
+        });
+    })
+    .catch((err) => {
+      toast(err.message);
+    });
+ 
+  };
+
   return (
+    
+
     <div className="login_Container m-2 ">
       <div className="left_div">
         <h1 className="main_heading">Create account</h1>
         <br />
 
-        <form className="input_form">
+       {false && <form className="input_form">
           <input
             className="data"
             type="text"
@@ -341,11 +407,131 @@ const SignUpScreen = () => {
             pauseOnHover
             theme="light"
           />
-        </form>
+        </form>}
+  
+    <Form
+    {...formItemLayout}
+    form={form}
+    name="register"
+    onFinish={onFinish}
+    style={{
+      maxWidth: 800,
+      
+    }}
+    scrollToFirstError
+  >
+    <Form.Item
+      name="name"
+      rules={[
+        {
+          type: "text",
+          message: "The input is not valid username!",
+        },
+        {
+          required: true,
+          message: "Please input your name!",
+        },
+      ]}
+    >
+      <Input placeholder="user name" prefix={<UserOutlined />} />
+    </Form.Item>
+    <Form.Item
+      name="email"
+      
+      rules={[
+        {
+          type: "email",
+          message: "The input is not valid E-mail!",
+        },
+        {
+          required: true,
+          message: "Please input your E-mail!",
+        },
+      ]}
+    >
+      <Input placeholder="email" prefix={<MailOutlined />}  />
+    </Form.Item>
+
+    <Form.Item
+      name="password"
+      extra="Password must have one uppercase letter, number and special cherecter"
+      rules={[
+        {
+          required: true,
+          message: "Please input your password!",
+        },
+      ]}
+      hasFeedback
+    >
+        <Input.Password
+          placeholder="password"
+          visibilityToggle={{
+            visible: passwordVisible,
+            onVisibleChange: setPasswordVisible,
+          }}
+          prefix={<LockOutlined />} 
+        />
+    
+    </Form.Item>
+
+    <Form.Item
+      name="confirm"
+      dependencies={["password"]}
+      hasFeedback
+      rules={[
+        {
+          required: true,
+          message: "Please confirm your password!",
+        },
+        ({ getFieldValue }) => ({
+          validator(_, value) {
+            if (!value || getFieldValue("password") === value) {
+              return Promise.resolve();
+            }
+            return Promise.reject(
+              new Error("The two passwords that you entered do not match!")
+            );
+          },
+        }),
+      ]}
+    >
+      <Input.Password
+        placeholder="confirm password"
+          visibilityToggle={{
+            visible: passwordVisible,
+            onVisibleChange: setPasswordVisible,
+          }}
+          prefix={<LockOutlined />} 
+      />
+    </Form.Item>
+
+    <Form.Item
+      name="role"
+      rules={[
+        {
+          required: true,
+          message: "Please select role!",
+        },
+      ]}
+    >
+      <Select placeholder="select your role">
+        <Option value="admin">Admin</Option>
+        <Option value="user">User</Option>
+      </Select>
+    </Form.Item>
+
+    <Form.Item {...tailFormItemLayout}>
+      <Button type="primary" htmlType="submit" style={{width:180}}>
+        <span style={{color:"white"}}>Register</span>
+      </Button>
+    </Form.Item>
+    </Form>
+    
+  
 
         <span className="bottom-part">
-          <small className="light_font">Have an account? </small>
-          <Link to="/signin">Sign In</Link>
+          <small className="light_font">have an account? </small>
+          <Link to="/signin">Sign in</Link>
         </span>
       </div>
       <div className="right_div"></div>
